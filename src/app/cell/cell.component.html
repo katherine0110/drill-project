@@ -1,0 +1,15 @@
+<div>
+    <div [ngSwitch]="cellStatus">
+        <div
+            *ngSwitchCase="'snake'"
+            [ngClass]="{ 'cell': true, 'crew': true, 'crew-down': isDown, 'crew-left': isLeft, 'crew-right': isRight, 'crew-up': isUp }"
+        ></div>
+
+        <div
+            *ngSwitchCase="'snake-head'"
+            [ngClass]="{ 'cell': true, 'marker': true, 'marker-down': isDown, 'marker-left': isLeft, 'marker-right': isRight, 'marker-up': isUp }"
+        ></div>
+
+        <div *ngSwitchDefault [ngClass]="{ cell: true }"></div>
+    </div>
+</div>
