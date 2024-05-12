@@ -2,6 +2,19 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.7.
 
+## Features
+Turning
+Marching & squad halt
+
+## Todo
+Stepping
+Whelling
+End point
+Timer
+Regenerate end point(keep current as start)
+Regenerate start & end
+Assign start (allow selection of squad form)
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
