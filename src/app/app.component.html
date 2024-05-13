@@ -1,6 +1,6 @@
 <main>
   <div class="container">
-    <div class="row">
+    <div class="row flex">
       <div class="col-9">
         <div
         class="board"
@@ -19,6 +19,18 @@
         <p-button label="Right Turn" (onClick)="changeDirection('right')"></p-button>
         <p-button label="Left Turn" (onClick)="changeDirection('left')"></p-button>
         <p-button label="About Turn" (onClick)="changeDirection('about')"></p-button>
+        <br />
+        <input matInput
+        type="number"
+        min="0"
+        max="6"
+        [(ngModel)]="numOfStep"> Pace(s)
+        <p-dropdown 
+          [options]="stepDirectionList" 
+          [(ngModel)]="selectedStepDirection" 
+          placeholder="Stepping Direction" />
+        <p-button label="March" (onClick)="stepping()"></p-button>
+
       </div>
     </div>
   </div>

@@ -5,9 +5,10 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ## Features
 Turning
 Marching & squad halt
+Stepping(without checking form of squad)
 
 ## Todo
-Stepping
+Stepping(add form checking)
 Whelling
 End point
 Timer

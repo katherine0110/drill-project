@@ -1,8 +1,10 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CellComponent } from './cell/cell.component';
 import { Position } from './position';
 import { CommonModule } from '@angular/common';
+import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 
 type MoveDirection = 'left' | 'right' | 'up' | 'down';
@@ -10,7 +12,7 @@ type MoveDirection = 'left' | 'right' | 'up' | 'down';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, CellComponent, ButtonModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, CellComponent, ButtonModule, DropdownModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -20,6 +22,8 @@ export class AppComponent implements OnInit {
   gridSizeY = 80;
   interval = 500;
   cells: Position[] = [];
+
+  Directions: MoveDirection[] = ['up', 'right', 'down', 'left', 'up', 'right', 'down'];
   drillPosition = [
     { x: this.gridSizeX / 2, y: this.gridSizeY / 2 },
     { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 },
@@ -35,8 +39,20 @@ export class AppComponent implements OnInit {
     { x: this.gridSizeX / 2 + 9, y: this.gridSizeY / 2 + 4 },
   ];
 
+  stepDirectionList = [
+    { label: 'Step Forward', value: 'forward'},
+    { label: 'Step Back', value: 'back'},
+    { label: 'Right Close', value: 'right'},
+    { label: 'Left Close', value: 'left'}
+  ];
+  selectedStepDirection = '';
+  numOfStep = 0;
+  isStepping = false;
+  steppingDirection: MoveDirection = 'up';
+
   direction: MoveDirection = 'up';
   isMarching = false;
+  isInline = false;
   
   templateColumnStyle = new Array(this.gridSizeY).fill('1fr').join(' ');
 
@@ -58,33 +74,16 @@ export class AppComponent implements OnInit {
   }
 
   updateGame() {
-    let xChange = 0;
-    let yChange = 0;
-    
     const newDrill = this.drillPosition.slice();
     let canUpdate = true;
+    let newPosition: Position;
     
-    if(this.isMarching){
-      switch (this.direction) {
-        case 'right':
-          yChange = 1;
-          break;
-        case 'left':
-          yChange = -1;
-          break;
-        case 'up':
-          xChange = -1;
-          break;
-        case 'down':
-          xChange = 1;
-          break;
-        default:
-          xChange = 0;
-          yChange = 0;
-      }
+    if(this.isMarching || this.isStepping){
+      newPosition = this.calculateMoving(this.isMarching ? this.direction : this.steppingDirection);
       newDrill.forEach((memberPosition) => {
-        const newX = memberPosition.x + xChange;
-        const newY = memberPosition.y + yChange;
+        const newX = memberPosition.x + newPosition.x;
+        const newY = memberPosition.y + newPosition.y;
+
         if (
           newX >= this.gridSizeX ||
           newX < 0 ||
@@ -95,14 +94,18 @@ export class AppComponent implements OnInit {
           return;
         }
       })
+
+      if(this.numOfStep === 0){
+        this.isStepping = false
+      }else{
+        this.numOfStep--;
+      }
     }
 
-
-    if (canUpdate && this.isMarching) {
-      
+    if ((canUpdate && this.isMarching) || this.isStepping) {
       newDrill.forEach((memberPosition) => {
-        memberPosition.x += xChange;
-        memberPosition.y += yChange;
+        memberPosition.x += newPosition.x;
+        memberPosition.y += newPosition.y;
         if (
           memberPosition.x >= this.gridSizeX ||
           memberPosition.x < 0 ||
@@ -118,50 +121,60 @@ export class AppComponent implements OnInit {
       this.drillPosition = newDrill;
     }
   }
+
+  calculateMoving(movingDirection: MoveDirection): Position{
+    let xChange = 0;
+    let yChange = 0;
+    
+    switch (movingDirection) {
+      case 'right':
+        yChange = 1;
+        break;
+      case 'left':
+        yChange = -1;
+        break;
+      case 'up':
+        xChange = -1;
+        break;
+      case 'down':
+        xChange = 1;
+        break;
+      default:
+        xChange = 0;
+        yChange = 0;
+    }
+    return {x: xChange, y: yChange};
+  }
   
   changeDirection(newDirection: string){
-    if(newDirection == 'right'){
-      switch (this.direction) {
-        case 'right':
-          this.direction = 'down';
-          break;
-        case 'left':
-          this.direction = 'up';
-          break;
-        case 'up':
-          this.direction = 'right';
-          break;
-        case 'down':
-          this.direction = 'left';
-      }
-    }else if(newDirection == 'left'){
-      switch (this.direction) {
-        case 'right':
-          this.direction = 'up';
-          break;
-        case 'left':
-          this.direction = 'down';
-          break;
-        case 'up':
-          this.direction = 'left';
-          break;
-        case 'down':
-          this.direction = 'right';
-      }
-    }else if(newDirection == 'about'){
-      switch (this.direction) {
-        case 'right':
-          this.direction = 'left';
-          break;
-        case 'left':
-          this.direction = 'right';
-          break;
-        case 'up':
-          this.direction = 'down';
-          break;
-        case 'down':
-          this.direction = 'up';
-      }
+    let directionIndex = this.direction === 'up' ? this.Directions.indexOf(this.direction, 2) : this.Directions.indexOf(this.direction);
+    switch (newDirection) {
+      case 'right':
+        this.direction = this.Directions[directionIndex + 1];
+        break;
+      case 'left':
+        this.direction = this.Directions[directionIndex - 1];
+        break;
+      case 'about':
+        this.direction = this.Directions[directionIndex + 2];
+    }
+  }
+
+  stepping(){
+    this.isStepping = true;
+    let directionIndex = this.direction === 'up' ? this.Directions.indexOf(this.direction, 2) : this.Directions.indexOf(this.direction);
+    switch (this.selectedStepDirection) {
+      case 'forward':
+        this.steppingDirection = this.Directions[directionIndex];
+        break;
+      case 'back':
+        this.steppingDirection = this.Directions[directionIndex + 2];
+        break;
+      case 'right':
+        this.steppingDirection = this.Directions[directionIndex + 1];
+        break;
+      case 'left':
+        this.steppingDirection = this.Directions[directionIndex - 1];
     }
   }
 }

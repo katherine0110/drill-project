@@ -23,9 +23,12 @@ export class CellComponent implements OnChanges {
   isUp = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    const change = changes['drillPosition'].currentValue;
-    if (!change) return;
-    this.drillPosition = change;
+    if(!this.drillPosition || !changes['drillPosition']){
+      return;
+    }else{
+      const change = changes['drillPosition'].currentValue;
+      this.drillPosition = change;
+    }
 
     const cellX = this.cell.x;
     const cellY = this.cell.y;
