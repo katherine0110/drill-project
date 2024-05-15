@@ -1,36 +1,42 @@
 <main>
-  <div class="container">
-    <div class="row flex">
-      <div class="col-9">
-        <div
-        class="board"
-        [ngStyle]="{ 'grid-template-columns': templateColumnStyle }"
-        >
-            <app-cell
-                *ngFor="let cell of cells"
-                [cell]="cell"
-                [drillPosition]="drillPosition"
-                [direction]="direction"
-            ></app-cell>
+  <p-confirmDialog [closable]="false" />
+  <div class="grid">
+    <div class="col-12 lg:col-6 flex justify-content-center">
+      <div class="flex">
+        <div class="board" [ngStyle]="{ 'grid-template-columns': templateColumnStyle }">
+          <app-cell *ngFor="let cell of cells" [cell]="cell" [drillPosition]="drillPosition"
+            [direction]="direction"></app-cell>
+
         </div>
       </div>
-      <div class="col-2">
-        <p-button label="{{ isMarching ? 'Squad Halt' : 'Quick March'}}" (onClick)="isMarching = !isMarching"></p-button>
+    </div>
+    <div class="col-12 lg:col-6">
+      <div class="mb-4">
+        <p-button label="{{ isMarching ? 'Squad Halt' : 'Quick March'}}"
+          (onClick)="isMarching = !isMarching"></p-button>
+      </div>
+      <div class="mb-4">
         <p-button label="Right Turn" (onClick)="changeDirection('right')"></p-button>
-        <p-button label="Left Turn" (onClick)="changeDirection('left')"></p-button>
+        <p-button class="m-2" label="Left Turn" (onClick)="changeDirection('left')"></p-button>
         <p-button label="About Turn" (onClick)="changeDirection('about')"></p-button>
-        <br />
-        <input matInput
-        type="number"
-        min="0"
-        max="6"
-        [(ngModel)]="numOfStep"> Pace(s)
-        <p-dropdown 
-          [options]="stepDirectionList" 
-          [(ngModel)]="selectedStepDirection" 
-          placeholder="Stepping Direction" />
-        <p-button label="March" (onClick)="stepping()"></p-button>
-
+      </div>
+      <div class="mb-4 grid flex align-content-center">
+        <div class="col-2 flex align-items-center justify-content-center">
+          <p-inputNumber [(ngModel)]="inputNumOfStep" inputId="minmax" [disabled]="!isInline || isMarching" [showButtons]="true" buttonLayout="vertical"
+            spinnerMode="vertical" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" [min]="0"
+            [max]="6" [style]="{'width': '4rem'}" />
+          <span [style]="{'margin': 'auto'}">Pace(s)</span>
+        </div>
+        <div class="col-3 flex align-items-center">
+          <p-dropdown class="col-3" [options]="stepDirectionList" [disabled]="!isInline || isMarching" [(ngModel)]="selectedStepDirection"
+            placeholder="Stepping Direction" />
+        </div>
+        <div class="col-2 flex align-items-center"><p-button class="col-3" label="March"
+            [disabled]="!isInline || isMarching" (onClick)="stepping()"></p-button></div>
+      </div>
+      <div class="mb-4">
+        <p-button label="Right Wheel" (onClick)="wheeling('right')" [disabled]="isInline"></p-button>
+        <p-button class="m-2" label="Left Wheel" (onClick)="wheeling('left')" [disabled]="isInline"></p-button>
       </div>
     </div>
   </div>

@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Position } from '../position';
 import { CommonModule } from '@angular/common';
-
-type MoveDirection = 'left' | 'right' | 'up' | 'down';
+import { squadDirection } from "../squadDirection";
 
 @Component({
   selector: 'app-cell',
@@ -14,7 +13,7 @@ type MoveDirection = 'left' | 'right' | 'up' | 'down';
 export class CellComponent implements OnChanges {
   @Input() cell!: Position;
   @Input() drillPosition!: Position[];
-  @Input() direction!: MoveDirection;
+  @Input() direction!: squadDirection;
 
   cellStatus: 'cell' | 'food' | 'snake' | 'snake-head' = 'cell';
   isDown = false;
@@ -47,10 +46,18 @@ export class CellComponent implements OnChanges {
     if (isSnakeHead) {
       this.cellStatus = 'snake-head';
     }
-    
-    this.isDown = this.direction === 'down';
-    this.isLeft = this.direction === 'left';
-    this.isRight = this.direction === 'right';
-    this.isUp = this.direction === 'up';
+
+    this.isDown = this.drillPosition.some(
+      (member) => member.x == cellX && member.y == cellY && member.facing === 'down'
+    );
+    this.isLeft = this.drillPosition.some(
+      (member) => member.x == cellX && member.y == cellY && member.facing === 'left'
+    );
+    this.isRight = this.drillPosition.some(
+      (member) => member.x == cellX && member.y == cellY && member.facing === 'right'
+    );
+    this.isUp = this.drillPosition.some(
+      (member) => member.x == cellX && member.y == cellY && member.facing === 'up'
+    );
   }
 }
