@@ -6,9 +6,10 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 Turning
 Marching & squad halt
 Stepping
+Whelling
 
 ## Todo
-Whelling
+Covering after Wheeling
 End point
 Timer
 Regenerate end point(keep current as start)

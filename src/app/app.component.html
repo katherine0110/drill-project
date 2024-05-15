@@ -35,8 +35,8 @@
             [disabled]="!isInline || isMarching" (onClick)="stepping()"></p-button></div>
       </div>
       <div class="mb-4">
-        <p-button label="Right Wheel" (onClick)="wheeling('right')" [disabled]="isInline"></p-button>
-        <p-button class="m-2" label="Left Wheel" (onClick)="wheeling('left')" [disabled]="isInline"></p-button>
+        <p-button label="Right Wheel" (onClick)="wheeling('right')" [disabled]="isInline || isWheeling"></p-button>
+        <p-button class="m-2" label="Left Wheel" (onClick)="wheeling('left')" [disabled]="isInline || isWheeling"></p-button>
       </div>
     </div>
   </div>
