@@ -12,7 +12,7 @@ import { squadDirection } from "../squadDirection";
 })
 export class CellComponent implements OnChanges {
   @Input() cell!: Position;
-  @Input() drillPosition!: Position[];
+  @Input() squadPosition!: Position[];
   @Input() direction!: squadDirection;
 
   cellStatus: 'cell' | 'food' | 'snake' | 'snake-head' = 'cell';
@@ -22,21 +22,21 @@ export class CellComponent implements OnChanges {
   isUp = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(!this.drillPosition || !changes['drillPosition']){
+    if(!this.squadPosition || !changes['squadPosition']){
       return;
     }else{
-      const change = changes['drillPosition'].currentValue;
-      this.drillPosition = change;
+      const change = changes['squadPosition'].currentValue;
+      this.squadPosition = change;
     }
 
     const cellX = this.cell.x;
     const cellY = this.cell.y;
 
-    const isSnake = this.drillPosition.some(
+    const isSnake = this.squadPosition.some(
       (snake) => snake.x == cellX && snake.y == cellY
     );
     const isSnakeHead =
-      this.drillPosition[0].x == cellX && this.drillPosition[0].y == cellY;
+      this.squadPosition[0].x == cellX && this.squadPosition[0].y == cellY;
 
     if (isSnake) {
       this.cellStatus = 'snake';
@@ -47,16 +47,16 @@ export class CellComponent implements OnChanges {
       this.cellStatus = 'snake-head';
     }
 
-    this.isDown = this.drillPosition.some(
+    this.isDown = this.squadPosition.some(
       (member) => member.x == cellX && member.y == cellY && member.facing === 'down'
     );
-    this.isLeft = this.drillPosition.some(
+    this.isLeft = this.squadPosition.some(
       (member) => member.x == cellX && member.y == cellY && member.facing === 'left'
     );
-    this.isRight = this.drillPosition.some(
+    this.isRight = this.squadPosition.some(
       (member) => member.x == cellX && member.y == cellY && member.facing === 'right'
     );
-    this.isUp = this.drillPosition.some(
+    this.isUp = this.squadPosition.some(
       (member) => member.x == cellX && member.y == cellY && member.facing === 'up'
     );
   }
