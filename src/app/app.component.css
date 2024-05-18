@@ -1,12 +1,18 @@
 @import "primeng/resources/themes/lara-light-blue/theme.css";
 @import "primeng/resources/primeng.css";
 
+.header {
+    border-bottom: 1px solid black;
+    margin-bottom: 20px;
+}
+
 .board {
     display: grid;
     gap: 2px;
-    max-width: 710px;
-    max-height: 420px;
+    width: 710px;
+    height: 420px;
     margin: 10px auto auto 10px;
+    padding: 0 15px 15px 0;
     background-color: aliceblue;
     border: 2px solid #999;
 }

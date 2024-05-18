@@ -9,7 +9,6 @@ Stepping
 Whelling
 
 ## Todo
-background
 End point
 Timer
 Regenerate end point(keep current as start)
