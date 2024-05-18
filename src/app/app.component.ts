@@ -106,14 +106,13 @@ export class AppComponent implements OnInit {
     }
 
     if (this.isStepping) {
+      this.numOfStep--;
+      newPosition = this.calculateMoving(this.steppingDirection, this.direction);
+      this.calculateNewDrill(newPosition, false);
       if (this.numOfStep === 0) {
         this.inputNumOfStep = 0;
         this.isStepping = false
-      } else {
-        this.numOfStep--;
       }
-      newPosition = this.calculateMoving(this.steppingDirection, this.direction);
-      this.calculateNewDrill(newPosition, false);
     }
 
     if (this.isWheeling) {
