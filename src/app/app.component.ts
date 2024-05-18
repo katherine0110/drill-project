@@ -21,8 +21,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 })
 export class AppComponent implements OnInit {
   score = 0;
-  gridSizeX = 50;
-  gridSizeY = 90;
+  gridSizeX = 46;
+  gridSizeY = 70;
   interval = 500;
   cells: Position[] = [];
 
