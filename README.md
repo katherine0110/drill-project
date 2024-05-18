@@ -2,6 +2,12 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.7.
 
+## Demo
+Demo page can be found in: https://katherine0110.github.io/drill-project/
+
+## Build github page
+Use command npx ngh --dir=dist/drill-project --no-silent to deploy code to git
+
 ## Features
 Turning
 Marching & squad halt
