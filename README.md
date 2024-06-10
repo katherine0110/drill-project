@@ -13,7 +13,6 @@ Stepping
 Whelling
 
 ## Todo
-Step side of squad
 Chinese version
 End point
 Timer

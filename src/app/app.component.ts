@@ -30,17 +30,17 @@ export class AppComponent implements OnInit {
   markerPosition: Position = { x: this.gridSizeX / 2, y: this.gridSizeY / 2, facing: 'up' };
   squadPosition: Position[] = [
     { x: this.gridSizeX / 2, y: this.gridSizeY / 2, facing: 'up' },
-    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 + 3, facing: 'up' },
-    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 + 6, facing: 'up' },
-    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 + 9, facing: 'up' },
+    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 3, facing: 'up' },
+    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 6, facing: 'up' },
+    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 9, facing: 'up' },
     { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2, facing: 'up' },
-    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 + 3, facing: 'up' },
-    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 + 6, facing: 'up' },
-    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 + 9, facing: 'up' },
+    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 3, facing: 'up' },
+    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 6, facing: 'up' },
+    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 9, facing: 'up' },
     { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2, facing: 'up' },
-    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 + 3, facing: 'up' },
-    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 + 6, facing: 'up' },
-    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 + 9, facing: 'up' },
+    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 3, facing: 'up' },
+    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 6, facing: 'up' },
+    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 9, facing: 'up' },
   ];
 
   stepDirectionList = [
