@@ -14,6 +14,7 @@ Whelling
 
 ## Todo
 Chinese version
+mobile version
 End point
 Timer
 Regenerate end point(keep current as start)
