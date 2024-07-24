@@ -16,10 +16,6 @@ export class CellComponent implements OnChanges {
   @Input() direction!: squadDirection;
 
   cellStatus: 'cell' | 'food' | 'snake' | 'snake-head' = 'cell';
-  isDown = false;
-  isLeft = false;
-  isRight = false;
-  isUp = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     if(!this.squadPosition || !changes['squadPosition']){
@@ -31,6 +27,7 @@ export class CellComponent implements OnChanges {
 
     const cellX = this.cell.x;
     const cellY = this.cell.y;
+    this.cell.facing = this.squadPosition.filter((member) => member.x === cellX && member.y === cellY)[0]?.facing??'up';
 
     const isSnake = this.squadPosition.some(
       (snake) => snake.x == cellX && snake.y == cellY
@@ -46,18 +43,5 @@ export class CellComponent implements OnChanges {
     if (isSnakeHead) {
       this.cellStatus = 'snake-head';
     }
-
-    this.isDown = this.squadPosition.some(
-      (member) => member.x == cellX && member.y == cellY && member.facing === 'down'
-    );
-    this.isLeft = this.squadPosition.some(
-      (member) => member.x == cellX && member.y == cellY && member.facing === 'left'
-    );
-    this.isRight = this.squadPosition.some(
-      (member) => member.x == cellX && member.y == cellY && member.facing === 'right'
-    );
-    this.isUp = this.squadPosition.some(
-      (member) => member.x == cellX && member.y == cellY && member.facing === 'up'
-    );
   }
 }

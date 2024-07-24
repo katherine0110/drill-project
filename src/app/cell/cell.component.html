@@ -2,13 +2,17 @@
     <div [ngSwitch]="cellStatus">
         <div
             *ngSwitchCase="'snake'"
-            [ngClass]="{ 'cell': true, 'crew': true, 'crew-down': isDown, 'crew-left': isLeft, 'crew-right': isRight, 'crew-up': isUp }"
-        ></div>
+            [ngClass]="{ 'cell': true, 'crew': true }"
+        >
+            <img src='{{ "../../assets/crew_" + cell.facing + ".png" }}' height="17.5">
+        </div>
 
         <div
             *ngSwitchCase="'snake-head'"
-            [ngClass]="{ 'cell': true, 'marker': true, 'marker-down': isDown, 'marker-left': isLeft, 'marker-right': isRight, 'marker-up': isUp }"
-        ></div>
+            [ngClass]="{ 'cell': true, 'marker': true }"
+        >
+            <img src='{{ "../../assets/marker_" + cell.facing + ".png" }}' height="17.5">
+        </div>
 
         <div *ngSwitchDefault [ngClass]="{ cell: true }"></div>
     </div>
