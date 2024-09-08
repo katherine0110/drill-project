@@ -8,10 +8,9 @@
 
 .board {
     display: grid;
-    gap: 2px;
-    width: 550px;
-    height: 350px;
-    margin: 10px auto auto 10px;
+    width: 40vw;
+    height: 80vh;
+    margin: 10px;
     padding: 0 15px 15px 0;
     background-color: aliceblue;
     border: 2px solid #999;

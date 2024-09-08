@@ -21,8 +21,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 })
 export class AppComponent implements OnInit {
   score = 0;
-  gridSizeX = 46;
-  gridSizeY = 70;
+  gridSizeX = 50;
+  gridSizeY = 90;
   interval = 500;
   cells: Position[] = [];
 
@@ -33,14 +33,14 @@ export class AppComponent implements OnInit {
     { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 3, facing: 'up' },
     { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 6, facing: 'up' },
     { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 9, facing: 'up' },
-    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2, facing: 'up' },
-    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 3, facing: 'up' },
-    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 6, facing: 'up' },
-    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 9, facing: 'up' },
-    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2, facing: 'up' },
-    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 3, facing: 'up' },
-    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 6, facing: 'up' },
-    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 9, facing: 'up' },
+    { x: this.gridSizeX / 2 + 2, y: this.gridSizeY / 2, facing: 'up' },
+    { x: this.gridSizeX / 2 + 2, y: this.gridSizeY / 2 - 3, facing: 'up' },
+    { x: this.gridSizeX / 2 + 2, y: this.gridSizeY / 2 - 6, facing: 'up' },
+    { x: this.gridSizeX / 2 + 2, y: this.gridSizeY / 2 - 9, facing: 'up' },
+    { x: this.gridSizeX / 2 + 4, y: this.gridSizeY / 2, facing: 'up' },
+    { x: this.gridSizeX / 2 + 4, y: this.gridSizeY / 2 - 3, facing: 'up' },
+    { x: this.gridSizeX / 2 + 4, y: this.gridSizeY / 2 - 6, facing: 'up' },
+    { x: this.gridSizeX / 2 + 4, y: this.gridSizeY / 2 - 9, facing: 'up' },
   ];
 
   stepDirectionList = [
@@ -69,8 +69,8 @@ export class AppComponent implements OnInit {
   constructor(private confirmationService: ConfirmationService) { }
 
   ngOnInit(): void {
-    this.generateBoard();
     // determine number of columns for styles
+    this.generateBoard();
 
     setInterval(() => {
       this.updateGame();
@@ -98,7 +98,6 @@ export class AppComponent implements OnInit {
     if (this.isMarching) {
       newPosition = this.calculateMoving(this.direction, this.direction);
       this.determineCanMove(1, newPosition).then((canUpdate) => {
-
         if (canUpdate) {
           this.calculateNewDrill(newPosition, false);
         }
@@ -259,7 +258,6 @@ export class AppComponent implements OnInit {
       if (canUpdate) {
         this.isWheeling = true;
         this.isMarching = false;
-        this.wheelingStep = 7;
         this.getDrillIndex();
       } else {
         this.confirmationService.confirm({
@@ -283,108 +281,83 @@ export class AppComponent implements OnInit {
         if(this.wheelDirection === 'up'){
           xChange = -1;
         }
-        if (this.wheelingStep === 7) {
+        let middleDirectinon = `${this.wheelDirection}${this.direction}`;
+        if (this.wheelingStep === 0) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 0:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 1:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: middleDirectinon };
                 break;
               case 2:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
-            }
-          })
-        } else if (this.wheelingStep === 6){
-          drillIndex.forEach((x) => {
-            let currentPosition = newDrill[drillIndex[x]];
-            switch (x) {
-              case 0:
-              case 3:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.direction };
-                break;
-              case 1:
-              case 4:
                 newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.direction };
-                break;
-              case 2:
-              case 5:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
-                break;
-              default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
             }
           })
-        } else if (this.wheelingStep === 5) {
+        } else if (this.wheelingStep === 1){
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 0:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 1:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (4 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 2:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (6 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
                 break;
               case 3:
-              case 6:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: middleDirectinon };
                 break;
               case 4:
-              case 7:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 5:
-              case 8:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: middleDirectinon };
                 break;
               default:
                 newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
             }
           })
-        } else if (this.wheelingStep === 4) {
+        } else if (this.wheelingStep === 2) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 0:
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.wheelDirection };
+                break;
+              case 1:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
                 break;
-              case 1:
+              case 2:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
                 break;
-              case 2:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (4 * xChange), y: currentPosition.y, facing: this.wheelDirection };
-                break;
               case 3:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 4:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (4 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 5:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (6 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
                 break;
               case 6:
-              case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: middleDirectinon };
                 break;
               case 7:
-              case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 8:
-              case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
             }
           })
         } else if (this.wheelingStep === 3) {
@@ -401,28 +374,28 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
                 break;
               case 6:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 7:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 8:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
                 break;
               case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: middleDirectinon };
                 break;
               case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
             }
           })
-        } else if (this.wheelingStep === 2) {
+        } else if (this.wheelingStep === 4) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
@@ -436,31 +409,22 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
                 break;
               case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
                 break;
               default:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
             }
           })
-        } else if (this.wheelingStep === 1) {
+        } else if (this.wheelingStep === 5) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
-              case 6:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
-                break;
-              case 7:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
-                break;
-              case 8:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (4 * xChange), y: currentPosition.y, facing: this.wheelDirection };
-                break;
               case 9:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.wheelDirection };
                 break;
@@ -474,19 +438,10 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
             }
           })
-        } else if (this.wheelingStep === 0) {
+        } else if (this.wheelingStep === 6) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
-              case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.wheelDirection };
-                break;
-              case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
-                break;
-              case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
-                break;
               default:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
             }
@@ -498,73 +453,51 @@ export class AppComponent implements OnInit {
         if(this.wheelDirection === 'left'){
           yChange = -1;
         }
-        if (this.wheelingStep === 7) {
+        let middleDirectinon = `${this.direction}${this.wheelDirection}`;
+        if (this.wheelingStep === 0) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 0:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               case 1:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               case 2:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (4 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.direction };
-            }
-          })
-        } else if (this.wheelingStep === 6){
-          drillIndex.forEach((x) => {
-            let currentPosition = newDrill[drillIndex[x]];
-            switch (x) {
-              case 0:
-              case 3:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.direction };
-                break;
-              case 1:
-              case 4:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
-                break;
-              case 2:
-              case 5:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.direction };
-                break;
-              default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.direction };
             }
           })
-        } else if (this.wheelingStep === 5) {
+        } else if (this.wheelingStep === 1) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 0:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: middleDirectinon };
                 break;
               case 1:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (4 * yChange), facing: middleDirectinon };
                 break;
               case 2:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (6 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (6 * yChange), facing: middleDirectinon };
                 break;
               case 3:
-              case 6:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               case 4:
-              case 7:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               case 5:
-              case 8:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (4 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               default:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.direction };
             }
           })
-        } else if (this.wheelingStep === 4) {
+        } else if (this.wheelingStep === 2) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
@@ -578,28 +511,25 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
                 break;
               case 3:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: middleDirectinon };
                 break;
               case 4:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (4 * yChange), facing: middleDirectinon };
                 break;
               case 5:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (6 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (6 * yChange), facing: middleDirectinon };
                 break;
               case 6:
-              case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               case 7:
-              case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               case 8:
-              case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
             }
           })
         } else if (this.wheelingStep === 3) {
@@ -607,63 +537,37 @@ export class AppComponent implements OnInit {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 3:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
                 break;
               case 4:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
                 break;
               case 5:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
                 break;
               case 6:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: middleDirectinon };
                 break;
               case 7:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (4 * yChange), facing: middleDirectinon };
                 break;
               case 8:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (6 * yChange), facing: middleDirectinon };
                 break;
               case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
-            }
-          })
-        } else if (this.wheelingStep === 2) {
-          drillIndex.forEach((x) => {
-            let currentPosition = newDrill[drillIndex[x]];
-            switch (x) {
-              case 6:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
-                break;
-              case 7:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
-                break;
-              case 8:
                 newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
-                break;
-              case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
-                break;
-              case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
-                break;
-              case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
-                break;
-              default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
             }
           })
-        } else if (this.wheelingStep === 1) {
+        } else if (this.wheelingStep === 4) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
@@ -677,44 +581,54 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
                 break;
               case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: middleDirectinon };
                 break;
               case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (4 * yChange), facing: middleDirectinon };
                 break;
               case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (6 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
             }
           })
-        } else if (this.wheelingStep === 0) {
+        } else if (this.wheelingStep === 5) {
           drillIndex.forEach((x) => {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (1 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
                 break;
               case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
-                break;
-              case 11:
                 newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
                 break;
+              case 11:
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
+                break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+            }
+          })
+        } else if (this.wheelingStep === 6) {
+          drillIndex.forEach((x) => {
+            let currentPosition = newDrill[drillIndex[x]];
+            switch (x) {
+              default:
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
             }
           })
         }
       }
-        if (this.wheelingStep === 0) {
+        if (this.wheelingStep === 6) {
+          this.wheelingStep = 0;
           this.isWheeling = false;
           this.isMarching = true;
           this.direction = this.wheelDirection;
+        } else {
+          this.wheelingStep++
         }
 console.log(newDrill)
-        this.wheelingStep--;
     } else {
       newDrill.forEach((memberPosition) => {
         memberPosition.x += newPosition.x;
@@ -770,8 +684,6 @@ console.log(newDrill)
         }
         max.sort((a, b) => (a.x < b.x ? 1 : -1));
     }
-
-
 
     let file1 = this.direction === 'left' || this.direction === 'right' ? newDrill.filter(x => x.y === max[0].y) : newDrill.filter(x => x.x === max[0].x);
     let file2 = this.direction === 'left' || this.direction === 'right' ? newDrill.filter(x => x.y === max[1].y) : newDrill.filter(x => x.x === max[1].x);

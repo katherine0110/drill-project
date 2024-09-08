@@ -7,8 +7,9 @@
     <div class="col-8 flex justify-content-center">
       <h1>Drill Training</h1>
     </div>
-    <div class="col-2 flex justify-content-center">
-    </div>
+    <!-- <div class="col-2 flex justify-content-center">
+      <p-button [label]="'Update ' + wheelingStep" (onClick)="updateGame()"></p-button>
+    </div> -->
   </div>
   <div class="grid">
     <div class="col-12 lg:col-6 flex justify-content-center">
@@ -26,9 +27,9 @@
           (onClick)="isMarching = !isMarching"></p-button>
       </div>
       <div class="mb-4">
-        <p-button label="Right Turn" (onClick)="changeDirection('right')"></p-button>
-        <p-button class="m-2" label="Left Turn" (onClick)="changeDirection('left')"></p-button>
-        <p-button label="About Turn" (onClick)="changeDirection('about')"></p-button>
+        <p-button label="Right Turn" (onClick)="changeDirection('right')" [disabled]="isWheeling"></p-button>
+        <p-button class="m-2" label="Left Turn" (onClick)="changeDirection('left')" [disabled]="isWheeling"></p-button>
+        <p-button label="About Turn" (onClick)="changeDirection('about')" [disabled]="isWheeling"></p-button>
       </div>
       <div class="mb-4 grid flex align-content-center">
         <div class="col-2 flex align-items-center justify-content-center">
