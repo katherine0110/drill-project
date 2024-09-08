@@ -4,14 +4,14 @@
             *ngSwitchCase="'snake'"
             [ngClass]="{ 'cell': true, 'crew': true }"
         >
-            <img src='{{ "../../assets/crew_" + cell.facing + ".png" }}' height="17.5">
+            <img src='{{ "./assets/crew_" + cell.facing + ".png" }}' height="17.5">
         </div>
 
         <div
             *ngSwitchCase="'snake-head'"
             [ngClass]="{ 'cell': true, 'marker': true }"
         >
-            <img src='{{ "../../assets/marker_" + cell.facing + ".png" }}' height="17.5">
+            <img src='{{ "./assets/marker_" + cell.facing + ".png" }}' height="17.5">
         </div>
 
         <div *ngSwitchDefault [ngClass]="{ cell: true }"></div>
