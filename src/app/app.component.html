@@ -7,9 +7,11 @@
     <div class="col-8 flex justify-content-center">
       <h1>Drill Training</h1>
     </div>
-    <!-- <div class="col-2 flex justify-content-center">
-      <p-button [label]="'Update ' + wheelingStep" (onClick)="updateGame()"></p-button>
-    </div> -->
+    <div *ngIf="debug" class="col-2 flex justify-content-center">
+      {{wheelingStep - 1}}
+      {{debugText}}
+      <p-button label="Update" (onClick)="updateGame()"></p-button>
+    </div>
   </div>
   <div class="grid">
     <div class="col-12 lg:col-6 flex justify-content-center">
