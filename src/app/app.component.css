@@ -6,12 +6,51 @@
     margin-bottom: 20px;
 }
 
+/* todo => tablet/mobile version */
+/* @media (max-width: 576px) { 
+    .board {
+        width: 550px;
+        height: 300px;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 768px) { 
+    .board {
+        width: 700px;
+        height: 300px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 992px) { 
+    .board {
+        width: 700px;
+        height: 300px;
+    }
+} */
+
+@media (max-width: 1200px) { 
+/* @media (min-width: 992px) and (max-width: 1200px) {  */
+    .board {
+        width: 400px;
+        height: 400px;
+    }
+}
+
+@media (min-width: 1200px) { 
+    .board {
+        width: 600px;
+        height: 600px;
+    }
+}
+
 .board {
     display: grid;
-    width: 40vw;
-    height: 80vh;
     margin: 10px;
     padding: 0 15px 15px 0;
     background-color: aliceblue;
     border: 2px solid #999;
+}
+
+.justify-end {
+    justify-content: flex-end;
 }

@@ -1,55 +1,76 @@
 <main>
-  <p-confirmDialog [closable]="false" />
+  <p-confirmDialog closable="false" />  
+  <p-dialog header="放置步操小隊" [(visible)]="showPlacingDialog" modal="true" [contentStyle]="{'overflow':'visible'}">
+    <div class="mb-3">
+      方向
+      <p-dropdown class="col-3" [options]="placeDirection" [(ngModel)]="boardSquadDirection"/>
+    </div>
+    <div class="mb-3">
+      隊形
+      <p-dropdown class="col-3" [options]="placeFormation" [(ngModel)]="boardSquadFormation"/>
+    </div>
+    <div class="mb-3">
+      <p-checkbox binary="true" label="基準員(Marker)於小隊前方" [(ngModel)]="frontMarker" />
+    </div>
+    <div class="flex justify-end">
+      <p-button label="取消" severity="secondary" (click)="showPlacingDialog = false" class="mr-3" />
+      <p-button label="確定" (click)="willPlaceSquad()" />
+    </div>
+  </p-dialog>
   <div class="header grid">
     <div class="col-2 flex justify-content-center">
       <img src="./assets/BB Logo.png" height="80">
     </div>
     <div class="col-8 flex justify-content-center">
-      <h1>Drill Training</h1>
-    </div>
-    <div *ngIf="debug" class="col-2 flex justify-content-center">
-      {{wheelingStep - 1}}
-      {{debugText}}
-      <p-button label="Update" (onClick)="updateGame()"></p-button>
+      <h1>小隊步操模擬器</h1>
     </div>
   </div>
   <div class="grid">
     <div class="col-12 lg:col-6 flex justify-content-center">
-      <div class="flex">
-        <div class="board" [ngStyle]="{ 'grid-template-columns': templateColumnStyle }">
-          <app-cell *ngFor="let cell of cells" [cell]="cell" [squadPosition]="squadPosition"
-            [direction]="direction"></app-cell>
-
-        </div>
+      <div #board class="board" [ngStyle]="{ 'grid-template-columns': templateColumnStyle }">
+        <app-cell *ngFor="let cell of cells" [cell]="cell" [squadPosition]="squadPosition"
+          [direction]="boardSquadDirection" [isPlacing]="isPlacing" (clickCell)="placeSquad($event)"></app-cell>
       </div>
     </div>
     <div class="col-12 lg:col-6">
-      <div class="mb-4">
-        <p-button label="{{ isMarching ? 'Squad Halt' : 'Quick March'}}"
-          (onClick)="isMarching = !isMarching"></p-button>
+      <div *ngIf="debug" class="col-2 flex justify-content-center mb-4">
+        {{wheelingStep - 1}}
+        {{debugText}}
+        <p-button label="Update" (onClick)="updateGame()"></p-button>
       </div>
       <div class="mb-4">
-        <p-button label="Right Turn" (onClick)="changeDirection('right')" [disabled]="isWheeling"></p-button>
-        <p-button class="m-2" label="Left Turn" (onClick)="changeDirection('left')" [disabled]="isWheeling"></p-button>
-        <p-button label="About Turn" (onClick)="changeDirection('about')" [disabled]="isWheeling"></p-button>
+        <p-button label="{{isPlacing ? '放置完成' : '放置步操小隊'}}"
+          (onClick)="isShowPlacingDialog()"
+          [disabled]="isMarching || isWheeling"
+          ></p-button>
+      </div>
+      <div class="mb-4">
+        <h2>步操號令</h2>
+        <p-button label="{{ isMarching ? 'Squad Halt' : 'Quick March'}}"
+          (onClick)="isMarching = !isMarching" [disabled]="isPlacing"></p-button>
+      </div>
+      <div class="mb-4">
+        <p-button label="Right Turn" (onClick)="changeDirection('right')" [disabled]="isWheeling || isPlacing"></p-button>
+        <p-button class="m-2" label="Left Turn" (onClick)="changeDirection('left')" [disabled]="isWheeling || isPlacing"></p-button>
+        <p-button label="About Turn" (onClick)="changeDirection('about')" [disabled]="isWheeling || isPlacing"></p-button>
       </div>
       <div class="mb-4 grid flex align-content-center">
         <div class="col-2 flex align-items-center justify-content-center">
-          <p-inputNumber [(ngModel)]="inputNumOfStep" inputId="minmax" [disabled]="!isInline || isMarching" [showButtons]="true" buttonLayout="vertical"
+          <p-inputNumber [(ngModel)]="inputNumOfStep" inputId="minmax" [disabled]="!isInline || isMarching || isPlacing" [showButtons]="true" buttonLayout="vertical"
             spinnerMode="vertical" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" [min]="0"
             [max]="6" [style]="{'width': '4rem'}" />
           <span [style]="{'margin': 'auto'}">Pace(s)</span>
         </div>
         <div class="col-3 flex align-items-center">
-          <p-dropdown class="col-3" [options]="stepDirectionList" [disabled]="!isInline || isMarching" [(ngModel)]="selectedStepDirection"
+          <p-dropdown class="col-3" [options]="stepDirectionList" [disabled]="!isInline || isMarching || isPlacing" [(ngModel)]="selectedStepDirection"
             placeholder="Stepping Direction" />
         </div>
         <div class="col-2 flex align-items-center"><p-button class="col-3" label="March"
-            [disabled]="!isInline || isMarching" (onClick)="stepping()"></p-button></div>
+            [disabled]="!isInline || isMarching || isPlacing" (onClick)="stepping()"></p-button></div>
       </div>
       <div class="mb-4">
-        <p-button label="Right Wheel" (onClick)="wheeling('right')" [disabled]="isInline || isWheeling"></p-button>
-        <p-button class="m-2" label="Left Wheel" (onClick)="wheeling('left')" [disabled]="isInline || isWheeling"></p-button>
+        <p-button label="Right Wheel" (onClick)="wheeling('right')" [disabled]="isInline || isWheeling || isPlacing"></p-button>
+        <p-button class="m-2" label="Left Wheel" (onClick)="wheeling('left')" [disabled]="isInline || isWheeling || isPlacing"></p-button>
       </div>
     </div>
   </div>

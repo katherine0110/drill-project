@@ -1,5 +1,60 @@
 .cell {
     border: 1px solid transparent;
-    height: 5px;
-    width: 5px;
+}
+
+/* todo => tablet/mobile version */
+/* @media (max-width: 576px) { 
+    .cell {
+        width: 4px;
+        height: 4px;
+    }
+
+    .cell img {
+        height: 16px;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 768px) { 
+    .cell {
+        width: 4px;
+        height: 4px;
+    }
+
+    .cell img {
+        height: 16px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 992px) { 
+    .cell {
+        width: 4px;
+        height: 4px;
+    }
+
+    .cell img {
+        height: 16px;
+    }
+} */
+
+@media (max-width: 1200px) { 
+/* @media (min-width: 992px) and (max-width: 1200px) {  */
+    .cell {
+        width: 6px;
+        height: 6px;
+    }
+
+    .cell img {
+        height: 12px;
+    }
+}
+
+@media (min-width: 1200px) { 
+    .cell {
+        width: 9px;
+        height: 9px;
+    }
+
+    .cell img {
+        width: 18px;
+    }
 }
