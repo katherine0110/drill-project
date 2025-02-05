@@ -1,50 +1,82 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CellComponent } from './cell/cell.component';
-import { Position } from './position';
+import { formation, Position, squadDirection, SquadFunc } from './common/squad-util';
 import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { squadDirection } from "./squadDirection";
+import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { DialogModule } from 'primeng/dialog';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule, CellComponent, ButtonModule, DropdownModule, ConfirmDialogModule, InputNumberModule],
-  providers: [ConfirmationService],
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    FormsModule,
+    CellComponent,
+    ButtonModule,
+    DropdownModule,
+    ConfirmDialogModule,
+    InputNumberModule,
+    DialogModule,
+    CheckboxModule,
+  ],
+  providers: [ConfirmationService, SquadFunc],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
-  score = 0;
-  gridSizeX = 50;
-  gridSizeY = 90;
+  debug = false;
+
+  @ViewChild('board') board!: ElementRef
+  clickedElement: Subscription = new Subscription();
+
+  gridSizeX = 64;
+  gridSizeY = 64;
   interval = 500;
   cells: Position[] = [];
 
   Directions: squadDirection[] = ['up', 'right', 'down', 'left', 'up', 'right', 'down'];
   markerPosition: Position = { x: this.gridSizeX / 2, y: this.gridSizeY / 2, facing: 'up' };
-  defaultFacing: squadDirection = 'up';
-  direction: squadDirection = 'up';
+  boardSquadDirection: squadDirection = 'up';
+  boardSquadFormation: formation = 'line';
   isMarching = false;
   isInline = true;
   squadPosition: Position[] = [
-    { x: this.gridSizeX / 2, y: this.gridSizeY / 2, facing: this.defaultFacing},
-    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 3, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 6, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 9, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2 + 2, y: this.gridSizeY / 2, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2 + 2, y: this.gridSizeY / 2 - 3, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2 + 2, y: this.gridSizeY / 2 - 6, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2 + 2, y: this.gridSizeY / 2 - 9, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2 + 4, y: this.gridSizeY / 2, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2 + 4, y: this.gridSizeY / 2 - 3, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2 + 4, y: this.gridSizeY / 2 - 6, facing: this.defaultFacing },
-    { x: this.gridSizeX / 2 + 4, y: this.gridSizeY / 2 - 9, facing: this.defaultFacing },
+    { x: this.gridSizeX / 2, y: this.gridSizeY / 2, facing: this.boardSquadDirection},
+    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 3, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 6, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2, y: this.gridSizeY / 2 - 9, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 3, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 6, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2 + 3, y: this.gridSizeY / 2 - 9, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 3, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 6, facing: this.boardSquadDirection },
+    { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 9, facing: this.boardSquadDirection },
+  ];
+
+  //for place squad
+  isPlacing = false;
+  showPlacingDialog = false;
+  frontMarker = true;
+  placeFormation: {label: string, value: formation}[] = [
+    {label: 'Squad In Line (列隊)', value: 'line'},
+    {label: 'Squad In Column of Threes (縱隊)', value: 'column'},
+  ];
+  placeDirection: {label: string, value: squadDirection}[] = [
+    {label: '上', value: 'up'},
+    {label: '下', value: 'down'},
+    {label: '左', value: 'left'},
+    {label: '右', value: 'right'},
   ];
 
   stepDirectionList = [
@@ -66,10 +98,12 @@ export class AppComponent implements OnInit {
 
   templateColumnStyle = new Array(this.gridSizeY).fill('1fr').join(' ');
   title: any;
-  debug = false;
   debugText = '';
 
-  constructor(private confirmationService: ConfirmationService) { }
+  constructor(
+    private confirmationService: ConfirmationService,
+    private squadFunc: SquadFunc,
+  ) { }
 
   ngOnInit(): void {
     // determine number of columns for styles
@@ -85,9 +119,28 @@ export class AppComponent implements OnInit {
   generateBoard() {
     for (let row = 0; row < this.gridSizeX; row++) {
       for (let col = 0; col < this.gridSizeY; col++) {
-        this.cells.push({ x: row, y: col, facing: this.defaultFacing });
+        this.cells.push({ x: row, y: col, facing: this.boardSquadDirection });
       }
     }
+  }
+
+  isShowPlacingDialog() {
+    if (this.isPlacing) {
+      this.isPlacing = false;
+    } else {
+      this.showPlacingDialog = true;
+    }
+  }
+
+  willPlaceSquad() {
+    this.isPlacing = true;
+    this.showPlacingDialog = false;
+    this.isInline = this.boardSquadFormation === 'line';
+  }
+
+  placeSquad(resp: Position) {
+    const newPosition: Position = {...resp, facing: this.boardSquadDirection};
+    this.squadPosition = this.squadFunc.calculateSquad(newPosition, this.boardSquadFormation, this.frontMarker, this.squadPosition);
   }
 
   generateSquad(forming: string) {
@@ -101,7 +154,7 @@ export class AppComponent implements OnInit {
     let newPosition: Position;
 
     if (this.isMarching) {
-      newPosition = this.calculateMoving(this.direction, this.direction);
+      newPosition = this.calculateMoving(this.boardSquadDirection, this.boardSquadDirection);
       this.determineCanMove(1, newPosition).then((canUpdate) => {
         if (canUpdate) {
           this.calculateNewDrill(newPosition, false);
@@ -111,7 +164,7 @@ export class AppComponent implements OnInit {
 
     if (this.isStepping) {
       this.numOfStep--;
-      newPosition = this.calculateMoving(this.steppingDirection, this.direction);
+      newPosition = this.calculateMoving(this.steppingDirection, this.boardSquadDirection);
       this.calculateNewDrill(newPosition, false);
       if (this.numOfStep === 0) {
         this.inputNumOfStep = 0;
@@ -120,7 +173,7 @@ export class AppComponent implements OnInit {
     }
 
     if (this.isWheeling) {
-      newPosition = this.calculateMoving(this.direction, this.direction);
+      newPosition = this.calculateMoving(this.boardSquadDirection, this.boardSquadDirection);
       this.calculateNewDrill(newPosition, true);
     }
   }
@@ -151,21 +204,21 @@ export class AppComponent implements OnInit {
 
   changeDirection(newDirection: string) {
     const newDrill = this.squadPosition.slice();
-    let directionIndex = this.direction === 'up' ? this.Directions.indexOf(this.direction, 2) : this.Directions.indexOf(this.direction);
+    let directionIndex = this.boardSquadDirection === 'up' ? this.Directions.indexOf(this.boardSquadDirection, 2) : this.Directions.indexOf(this.boardSquadDirection);
     switch (newDirection) {
       case 'right':
-        this.direction = this.Directions[directionIndex + 1];
+        this.boardSquadDirection = this.Directions[directionIndex + 1];
         this.isInline = !this.isInline;
         break;
       case 'left':
-        this.direction = this.Directions[directionIndex - 1];
+        this.boardSquadDirection = this.Directions[directionIndex - 1];
         this.isInline = !this.isInline;
         break;
       case 'about':
-        this.direction = this.Directions[directionIndex + 2];
+        this.boardSquadDirection = this.Directions[directionIndex + 2];
     }
     newDrill.forEach((memberPosition) => {
-      memberPosition.facing = this.direction;
+      memberPosition.facing = this.boardSquadDirection;
     })
     this.squadPosition = newDrill;
   }
@@ -173,12 +226,12 @@ export class AppComponent implements OnInit {
   stepping() {
     if (this.selectedStepDirection.length === 0 || this.inputNumOfStep === 0) {
       this.confirmationService.confirm({
-        message: 'Please complete the Stepping command!',
+        message: '請輸入完整號令',
         rejectVisible: false,
-        acceptLabel: 'OK',
+        acceptLabel: '確定',
       })
     } else {
-      let directionIndex = this.direction === 'up' ? this.Directions.indexOf(this.direction, 2) : this.Directions.indexOf(this.direction);
+      let directionIndex = this.boardSquadDirection === 'up' ? this.Directions.indexOf(this.boardSquadDirection, 2) : this.Directions.indexOf(this.boardSquadDirection);
       switch (this.selectedStepDirection) {
         case 'forward':
           this.steppingDirection = this.Directions[directionIndex];
@@ -195,16 +248,17 @@ export class AppComponent implements OnInit {
 
       //determine if can move
       let newPosition: Position;
-      newPosition = this.calculateMoving(this.steppingDirection, this.direction);
+      newPosition = this.calculateMoving(this.steppingDirection, this.boardSquadDirection);
       this.determineCanMove(this.inputNumOfStep, newPosition).then((canUpdate) => {
         if (canUpdate) {
           this.isStepping = true;
           this.numOfStep = this.inputNumOfStep;
         } else {
           this.confirmationService.confirm({
-            message: 'Not enough space!',
+            message: '空間不足以進行該動作',
             rejectVisible: false,
-            acceptLabel: 'OK',
+            acceptLabel: '確定',
+            acceptIcon: 'none'
           })
         }
       })
@@ -225,7 +279,6 @@ export class AppComponent implements OnInit {
         newY >= this.gridSizeY ||
         newY < 0
       ) {
-        console.log("stop")
         canUpdate = false;
         return;
       }
@@ -234,7 +287,7 @@ export class AppComponent implements OnInit {
   }
 
   wheeling(wheelDirection: string) {
-    let directionIndex = this.direction === 'up' ? this.Directions.indexOf(this.direction, 2) : this.Directions.indexOf(this.direction);
+    let directionIndex = this.boardSquadDirection === 'up' ? this.Directions.indexOf(this.boardSquadDirection, 2) : this.Directions.indexOf(this.boardSquadDirection);
     switch (wheelDirection) {
       case 'right':
         this.wheelDirection = this.Directions[directionIndex + 1];
@@ -245,17 +298,18 @@ export class AppComponent implements OnInit {
 
     //determine if can move
     let newPosition: Position;
-    newPosition = this.calculateMoving(this.wheelDirection, this.direction);
+    newPosition = this.calculateMoving(this.wheelDirection, this.boardSquadDirection);
 
-    this.determineCanMove(14, newPosition).then((canUpdate) => {
+    this.determineCanMove(16, newPosition).then((canUpdate) => {
       if (canUpdate) {
-        newPosition = this.calculateMoving(this.direction, this.direction);
-        return this.determineCanMove(10, newPosition);
+        newPosition = this.calculateMoving(this.boardSquadDirection, this.boardSquadDirection);
+        return this.determineCanMove(9, newPosition);
       } else {
         this.confirmationService.confirm({
-          message: 'Not enough space!',
+          message: '空間不足以進行該動作',
           rejectVisible: false,
-          acceptLabel: 'OK',
+          acceptLabel: '確定',
+          acceptIcon: 'none'
         })
         return false;
       }
@@ -266,9 +320,10 @@ export class AppComponent implements OnInit {
         this.getDrillIndex();
       } else {
         this.confirmationService.confirm({
-          message: 'Not enough space!',
+          message: '空間不足以進行該動作',
           rejectVisible: false,
-          acceptLabel: 'OK',
+          acceptLabel: '確定',
+          acceptIcon: 'none'
         })
       }
     })
@@ -279,14 +334,14 @@ export class AppComponent implements OnInit {
 
     if (whelling) {
       let drillIndex = this.wheelingDrillIndex;
-      let yChange = this.direction === 'left' ? -1 : 1;
-      let xChange = this.direction === 'up' ? -1 : 1;
+      let yChange = this.boardSquadDirection === 'left' ? -1 : 1;
+      let xChange = this.boardSquadDirection === 'up' ? -1 : 1;
 
       if (this.wheelDirection === 'up' || this.wheelDirection === 'down') {
         if(this.wheelDirection === 'up'){
           xChange = -1;
         }
-        let middleDirectinon = `${this.wheelDirection}${this.direction}`;
+        let middleDirectinon = `${this.wheelDirection}${this.boardSquadDirection}`;
         this.debugText = middleDirectinon;
 
         if (this.wheelingStep === 0) {
@@ -297,13 +352,13 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 1:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 2:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.boardSquadDirection };
             }
           })
         } else if (this.wheelingStep === 1){
@@ -323,13 +378,13 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 4:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 5:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.boardSquadDirection };
             }
           })
         } else if (this.wheelingStep === 2) {
@@ -358,13 +413,13 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 7:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 8:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.boardSquadDirection };
             }
           })
         } else if (this.wheelingStep === 3) {
@@ -393,13 +448,13 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (5 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
             }
           })
         } else if (this.wheelingStep === 4) {
@@ -425,7 +480,7 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (3 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
             }
           })
         } else if (this.wheelingStep === 5) {
@@ -442,7 +497,7 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (4 * xChange), y: currentPosition.y, facing: this.wheelDirection };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
             }
           })
         } else if (this.wheelingStep === 6) {
@@ -450,7 +505,7 @@ export class AppComponent implements OnInit {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.wheelDirection };
             }
           })
         }
@@ -460,7 +515,7 @@ export class AppComponent implements OnInit {
         if(this.wheelDirection === 'left'){
           yChange = -1;
         }
-        let middleDirectinon = `${this.direction}${this.wheelDirection}`;
+        let middleDirectinon = `${this.boardSquadDirection}${this.wheelDirection}`;
         this.debugText = middleDirectinon;
         if (this.wheelingStep === 0) {
           drillIndex.forEach((x) => {
@@ -476,7 +531,7 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.boardSquadDirection };
             }
           })
         } else if (this.wheelingStep === 1) {
@@ -502,7 +557,7 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.boardSquadDirection };
             }
           })
         } else if (this.wheelingStep === 2) {
@@ -510,13 +565,13 @@ export class AppComponent implements OnInit {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 0:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
                 break;
               case 1:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
                 break;
               case 2:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
                 break;
               case 3:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
@@ -537,7 +592,7 @@ export class AppComponent implements OnInit {
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
                 break;
               default:
-                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y, facing: this.direction };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y, facing: this.boardSquadDirection };
             }
           })
         } else if (this.wheelingStep === 3) {
@@ -545,13 +600,13 @@ export class AppComponent implements OnInit {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 3:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
                 break;
               case 4:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
                 break;
               case 5:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
                 break;
               case 6:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
@@ -580,13 +635,13 @@ export class AppComponent implements OnInit {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 6:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
                 break;
               case 7:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
                 break;
               case 8:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
                 break;
               case 9:
                 newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (1 * yChange), facing: middleDirectinon };
@@ -606,13 +661,13 @@ export class AppComponent implements OnInit {
             let currentPosition = newDrill[drillIndex[x]];
             switch (x) {
               case 9:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (1 * xChange), y: currentPosition.y + (2 * yChange), facing: this.wheelDirection };
                 break;
               case 10:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (2 * xChange), y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
                 break;
               case 11:
-                newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
+                newDrill[drillIndex[x]] = { x: currentPosition.x + (3 * xChange), y: currentPosition.y + (4 * yChange), facing: this.wheelDirection };
                 break;
               default:
                 newDrill[drillIndex[x]] = { x: currentPosition.x, y: currentPosition.y + (3 * yChange), facing: this.wheelDirection };
@@ -632,7 +687,7 @@ export class AppComponent implements OnInit {
           this.wheelingStep = 0;
           this.isWheeling = false;
           this.isMarching = true;
-          this.direction = this.wheelDirection;
+          this.boardSquadDirection = this.wheelDirection;
         } else {
           this.wheelingStep++
         }
@@ -653,7 +708,7 @@ export class AppComponent implements OnInit {
     let max3: Position = { x: -1, y: -1, facing: undefined };
     let max4: Position = { x: -1, y: -1, facing: undefined };
 
-    switch (this.direction) {
+    switch (this.boardSquadDirection) {
       case 'right':
         for (let i = 0; i < newDrill.length; i++) {
           if (!stored.includes(newDrill[i].y)) {
@@ -692,10 +747,10 @@ export class AppComponent implements OnInit {
         max.sort((a, b) => (a.x < b.x ? 1 : -1));
     }
 
-    let file1 = this.direction === 'left' || this.direction === 'right' ? newDrill.filter(x => x.y === max[0].y) : newDrill.filter(x => x.x === max[0].x);
-    let file2 = this.direction === 'left' || this.direction === 'right' ? newDrill.filter(x => x.y === max[1].y) : newDrill.filter(x => x.x === max[1].x);
-    let file3 = this.direction === 'left' || this.direction === 'right' ? newDrill.filter(x => x.y === max[2].y) : newDrill.filter(x => x.x === max[2].x);
-    let file4 = this.direction === 'left' || this.direction === 'right' ? newDrill.filter(x => x.y === max[3].y) : newDrill.filter(x => x.x === max[3].x);
+    let file1 = this.boardSquadDirection === 'left' || this.boardSquadDirection === 'right' ? newDrill.filter(x => x.y === max[0].y) : newDrill.filter(x => x.x === max[0].x);
+    let file2 = this.boardSquadDirection === 'left' || this.boardSquadDirection === 'right' ? newDrill.filter(x => x.y === max[1].y) : newDrill.filter(x => x.x === max[1].x);
+    let file3 = this.boardSquadDirection === 'left' || this.boardSquadDirection === 'right' ? newDrill.filter(x => x.y === max[2].y) : newDrill.filter(x => x.x === max[2].x);
+    let file4 = this.boardSquadDirection === 'left' || this.boardSquadDirection === 'right' ? newDrill.filter(x => x.y === max[3].y) : newDrill.filter(x => x.x === max[3].x);
 
     switch (this.wheelDirection) {
       case 'right':
