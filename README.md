@@ -11,16 +11,15 @@ Turning
 Marching & squad halt
 Stepping
 Whelling
+Assign start (allow selection of squad form)
 
 ## Todo
 End point
 Timer
 Regenerate end point(keep current as start)
 Regenerate start & end
-Assign start (allow selection of squad form)
 Changing Direction
 Forming squad
-Chinese version
 mobile version
 
 ## Development server
