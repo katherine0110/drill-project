@@ -35,7 +35,11 @@ export class CellComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((!this.squadPosition || !changes['squadPosition']) && (!this.goalPosition || this.goalPosition.length !== 12 || !changes['goalPosition'])) {
+    if ((!this.squadPosition || !changes['squadPosition']) && (!this.goalPosition || this.goalPosition.length !== 12)) {
+      // for clear goal
+      if (this.cellStatus !== 'squad' && this.cellStatus !== 'marker') {
+        this.cellStatus = 'cell';
+      }
       return;
     } else {
       const cellX = this.cell.x;

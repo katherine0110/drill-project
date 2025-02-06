@@ -69,9 +69,13 @@
               (onClick)="isShowGoalPlacingDialog()"
               [disabled]="isPlacing"
               ></p-button>
+            <p-button label="清除步操小隊終點" class="m-2"
+              (onClick)="clearGoal()"
+              [disabled]="isPlacing || isGoalPlacing"
+              ></p-button>
           </div>
           <!-- <div class="mb-4">
-            <p-button label="隨機放置步操小隊終點(in progress)"
+            <p-button label="隨機放置步操小隊終點"
               (onClick)="isShowGoalPlacingDialog()"
               [disabled]="true"
               ></p-button>

@@ -167,6 +167,10 @@ export class AppComponent implements OnInit {
   //   this.goalPosition = this.squadFunc.calculateSquad(newPosition, this.goalSquadFormation, this.frontMarker, this.goalPosition);
   // }
 
+  clearGoal() {
+    this.goalPosition = [];
+  }
+
   placeSquad(resp: Position) {
     if (this.isPlacing) {
       const newPosition: Position = {...resp, facing: this.boardSquadDirection};
