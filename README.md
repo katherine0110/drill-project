@@ -3,24 +3,24 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.7.
 
 ## Demo
-Demo page can be found in: https://katherine0110.github.io/drill-project/
+Demo page can be found in: https://katherine0110.github.io/drill-project/ <br />
 (ng deploy --base-href=/drill-project/)
 
 ## Features
-Turning
-Marching & squad halt
-Stepping
-Whelling
+Turning <br />
+Marching & squad halt <br />
+Stepping <br />
+Whelling <br />
 Assign start (allow selection of squad form)
 
 ## Todo
-End point
-Timer
-Regenerate end point(keep current as start)
-Regenerate start & end
-Changing Direction
-Forming squad
-mobile version
+Tab to separate place Squad and Words of Command <br />
+End point <br />
+Timer <br />
+Regenerate end point <br />
+Changing Direction <br />
+Forming squad <br />
+mobile version <br />
 
 ## Development server
 
