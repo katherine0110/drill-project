@@ -10,6 +10,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { TabViewModule } from 'primeng/tabview';
 import { DialogModule } from 'primeng/dialog';
 import { Subscription } from 'rxjs';
 
@@ -27,6 +28,7 @@ import { Subscription } from 'rxjs';
     InputNumberModule,
     DialogModule,
     CheckboxModule,
+    TabViewModule,
   ],
   providers: [ConfirmationService, SquadFunc],
   templateUrl: './app.component.html',
@@ -64,7 +66,7 @@ export class AppComponent implements OnInit {
     { x: this.gridSizeX / 2 + 6, y: this.gridSizeY / 2 - 9, facing: this.boardSquadDirection },
   ];
 
-  //for place squad
+  // place squad
   isPlacing = false;
   showPlacingDialog = false;
   frontMarker = true;
@@ -78,6 +80,13 @@ export class AppComponent implements OnInit {
     {label: '左', value: 'left'},
     {label: '右', value: 'right'},
   ];
+
+  // goal
+  isGoalPlacing = false;
+  showGoalPlacingDialog = false;
+  goalSquadDirection: squadDirection = 'up';
+  goalSquadFormation: formation = 'line';
+  goalPosition: Position[] = [];
 
   stepDirectionList = [
     { label: 'Step Forward', value: 'forward' },
@@ -132,15 +141,40 @@ export class AppComponent implements OnInit {
     }
   }
 
-  willPlaceSquad() {
-    this.isPlacing = true;
-    this.showPlacingDialog = false;
-    this.isInline = this.boardSquadFormation === 'line';
+  isShowGoalPlacingDialog() {
+    if (this.isGoalPlacing) {
+      this.isGoalPlacing = false;
+    } else {
+      this.showGoalPlacingDialog = true;
+    }
   }
 
+  preparePlaceSquad(squadType: string) {
+    if (squadType === 'squad') {
+      this.isPlacing = true;
+      this.showPlacingDialog = false;
+      this.isInline = this.boardSquadFormation === 'line';
+    } else {
+      this.isGoalPlacing = true;
+      this.showGoalPlacingDialog = false;
+    }
+  }
+
+  // randomPlaceSquad() {
+  //   let randomFormation = this.placeFormation[Math.floor(Math.random() * this.placeFormation.length)].value;
+  //   let randomDirection = this.placeDirection[Math.floor(Math.random() * this.placeDirection.length)].value;
+  //   const newPosition: Position = {...resp, facing: this.goalSquadDirection};
+  //   this.goalPosition = this.squadFunc.calculateSquad(newPosition, this.goalSquadFormation, this.frontMarker, this.goalPosition);
+  // }
+
   placeSquad(resp: Position) {
-    const newPosition: Position = {...resp, facing: this.boardSquadDirection};
-    this.squadPosition = this.squadFunc.calculateSquad(newPosition, this.boardSquadFormation, this.frontMarker, this.squadPosition);
+    if (this.isPlacing) {
+      const newPosition: Position = {...resp, facing: this.boardSquadDirection};
+      this.squadPosition = this.squadFunc.calculateSquad(newPosition, this.boardSquadFormation, this.frontMarker, this.squadPosition);
+    } else if (this.isGoalPlacing) {
+      const newPosition: Position = {...resp, facing: this.goalSquadDirection};
+      this.goalPosition = this.squadFunc.calculateSquad(newPosition, this.goalSquadFormation, this.frontMarker, this.goalPosition);
+    }
   }
 
   generateSquad(forming: string) {

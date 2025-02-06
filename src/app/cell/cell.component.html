@@ -1,7 +1,7 @@
 <div #boardCell>
     <div [ngSwitch]="cellStatus">
         <div
-            *ngSwitchCase="'snake'"
+            *ngSwitchCase="'squad'"
             class="cell"
             [ngClass]="{ 'crew': true }"
         >
@@ -9,9 +9,25 @@
         </div>
 
         <div
-            *ngSwitchCase="'snake-head'"
+            *ngSwitchCase="'marker'"
             class="cell"
             [ngClass]="{ 'marker': true }"
+        >
+            <img src='{{ "./assets/marker_" + cell.facing + ".png" }}'>
+        </div>
+
+        <div
+            *ngSwitchCase="'goal'"
+            class="cell"
+            [ngClass]="{ 'crew': true, 'goal': true }"
+        >
+            <img src='{{ "./assets/crew_" + cell.facing + ".png" }}'>
+        </div>
+
+        <div
+            *ngSwitchCase="'goalMarker'"
+            class="cell"
+            [ngClass]="{ 'marker': true, 'goal': true }"
         >
             <img src='{{ "./assets/marker_" + cell.facing + ".png" }}'>
         </div>
