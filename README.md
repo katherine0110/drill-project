@@ -16,11 +16,12 @@ Assign start (allow selection of squad form)
 ## Todo
 Tab to separate place Squad and Words of Command <br />
 End point <br />
-Timer <br />
 Regenerate end point <br />
+Embed Google form for suggestion <br />
+Timer <br />
 Changing Direction <br />
 Forming squad <br />
-mobile version <br />
+Mobile version <br />
 
 ## Development server
 
