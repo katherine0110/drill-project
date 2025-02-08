@@ -67,7 +67,8 @@ export class CellComponent implements AfterViewInit, OnChanges {
           if (isSquadMarker) {
             this.cellStatus = 'marker';
           }
-        } else {
+        } else if (isSquad || isSquadMarker) {
+          this.cell.facing = this.squadPosition.filter((member) => member.x === cellX && member.y === cellY)[0]?.facing??'up';
           if (isSquad) {
             this.cellStatus = 'squad';
           }
