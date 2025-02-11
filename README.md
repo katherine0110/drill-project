@@ -17,10 +17,10 @@ Start and end point (in progress)
 
 ## Todo
 
-~~Assign start (allow selection of squad form)~~ <br />
-~~Tab to separate place Squad and Words of Command~~ <br />
-~~End point~~ <br />
+Resize img for better wheeling display <br />
 Random generate end point <br />
+Preview of squad to be placed <br />
+Changable board <br />
 Embed Google form for suggestion <br />
 Timer <br />
 Changing Direction <br />
